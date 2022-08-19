@@ -24,9 +24,10 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(function (error) {
                 console.log(error);
             });
-
-
     }
+
+    //-------------------Fonction d'affichage des produits-------------------//
+    //---------------------------------------------------------------------//
 
     function displayProduct(product) {
         const title = document.getElementsByTagName("title")[0];
@@ -46,9 +47,20 @@ document.addEventListener("DOMContentLoaded", function () {
         title.innerHTML = product.name;
         parentName.innerText = product.name;
         parentPrice.innerText = product.price;
+        parentDescription.innerText = product.description;
 
+        // select colors
 
+        const DomColors = document.getElementById("colors");
+        let colors = product.colors;
 
-
+        for (let color of colors) {
+            DomColors.insertAdjacentHTML(
+                "beforeend",
+                `
+                <option value="${color}">${color}</option>
+                `
+            )
+        }
     }
 })

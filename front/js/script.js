@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    //-------------------Fonction d'affichage du produit-------------------//
+    //-------------------Fonction d'affichage des produits-------------------//
     //---------------------------------------------------------------------//
     function displayProduct(products) {
         // Récupération du parent.
