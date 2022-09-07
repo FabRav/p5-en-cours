@@ -18,7 +18,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         displayPrice(Allproducts);
 
-        Listen(Allproducts);
+        listen(Allproducts);
+
+        verifyFirstName();
+
+        // verifyOrder();
 
     }
 
@@ -89,12 +93,23 @@ document.addEventListener("DOMContentLoaded", function () {
     // fonction afficichage
 
     function displayProduct(Allproducts) {
-        // Récupération du parent.
-        const Dom = document.getElementById("cart__items");
-        for (let product of Allproducts) {
-            Dom.insertAdjacentHTML(
-                "beforeend",
-                `
+
+        // afficher si le panier est vide
+
+        if (Allproducts === null || Allproducts == 0) {
+            document.getElementById("cart__items").innerHTML = `
+            <div class="cart__empty">
+                <p>Votre panier est vide !</p>
+             </div>`
+        }
+        else {
+            // injection du code à chaque tour de boucle, de la longueur des produits
+
+            const Dom = document.getElementById("cart__items");
+            for (let product of Allproducts) {
+                Dom.insertAdjacentHTML(
+                    "beforeend",
+                    `
                 <article class="cart__item" data-id="${product.id}" data-color="${product.color}">
                 <div class="cart__item__img">
                   <img src="${product.imageurl}" alt="${product.alttxt}">
@@ -117,7 +132,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
               </article>
                 `
-            )
+                )
+            }
         }
     }
 
@@ -142,16 +158,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     //-------------------Fonction principal d'écoute-------------------//
     //----------------------------------------------------------------//
-    function Listen(AllProducts) {
+    function listen(AllProducts) {
         // Fonction si changement dans notre input quantity.
-        ListenQuantity(AllProducts);
+        listenQuantity(AllProducts);
         // Fonction si on veux supprimer un éléments de la liste.
-        ListenDelete(AllProducts);
+        listenDelete(AllProducts);
     }
 
     //-------------------Fonction d'écoute de quantité-------------------//
     //-------------------------------------------------------------------//
-    function ListenQuantity(AllProducts) {
+    function listenQuantity(AllProducts) {
 
         let DomInputQty = document.querySelectorAll(".itemQuantity");
 
@@ -163,12 +179,6 @@ document.addEventListener("DOMContentLoaded", function () {
         // let inputQty = data.target.value;
 
         //  console.log(inputQty);
-
-        // console.log(product.qty)
-        // console.log(product.id)
-        // console.log(product.color)
-        // console.log(product.qty); 
-
 
         // récuperer article en cours de modif dans local storage + update localstorage article qty
 
@@ -185,7 +195,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 let findColor = AllProducts[i].color;
                 console.log(findColor);
 
-                console.log(AllProducts);
+                // console.log(AllProducts);
 
                 const updateStorage = AllProducts.find(element => element.id == findId && element.color == findColor);
                 updateStorage.qty = newQty;
@@ -198,33 +208,85 @@ document.addEventListener("DOMContentLoaded", function () {
                 //  window.location.href = "cart.html";
             })
         }
-
-        // let LocalStorageProducts = getLocalStorageProduct();
-
-
-        // update qty dans allproduct et re display
-
-        let AllproductsUpdate = [];
-
-        // displayPrice(AllproductsUpdate);
-
     }
 
 
     //-------------------Fonction ecoute produit supprmimé-------------------//
     //-----------------------------------------------------------------------//
 
-    function ListenDelete(AllProducts) {
+    function listenDelete(AllProducts) {
 
-        let btnDelete = document.querySelectorAll(".deleteItem");
+        const DomDeleteItem = document.querySelectorAll(".deleteItem");
 
-        for (let btn of Array.from(btnDelete)) {
-            btn.addEventListener("click", function (e) {
-                let productId = e.target.getAttribute("productId");
-                let productColor = e.target.getAttribute("productColor");
+        for (let i = 0; i < DomDeleteItem.length; i++) {
+            DomDeleteItem[i].addEventListener("click", (event) => {
+                event.preventDefault();
 
+                let searchId = AllProducts[i].id;
+                let searchColor = AllProducts[i].id;
+
+                const deleteItem = AllProducts.find(element => element.id == searchId && element.color == searchColor);
+                localStorage.removeItem(
+                    AllProducts[i].name + " " + AllProducts[i].color,
+                    JSON.stringify(deleteItem));
+                displayPrice(AllProducts);
+                alert("Votre article a été supprimé.");
+                window.location.href = "cart.html";
             })
         }
     }
+
+    function verifyOrder() {
+        verifyFirstName();
+        // verifyLastName();
+        // verifyAdress();
+        // verifyCity();
+        // verifyEmail();
+    }
+
+    function verifyFirstName() {
+
+        const domFirstName = document.getElementById("firstName")
+        const errorFirstName = document.getElementById("firstNameErrorMsg");
+
+        domFirstName.addEventListener("input", function (e) {
+
+            let firstName = e.target.value;
+            console.log(firstName);
+
+            if (firstName.length == 0) {
+                firstName = null;
+                errorFirstName.innerHTML = ""
+                console.log(firstName);
+            }
+            else if (firstName.length > 20) {
+                errorFirstName.innerText = "Le prénom doit faire moins de 20 caractères";
+            }
+            else if (firstName.match(/[a-z A-Z]{3,20}$/)) {
+                errorFirstName.innerHTML = ""
+                return true;
+            }
+            else {
+                errorFirstName.innerText = "Prénom non valide";
+            }
+
+            // après avoir retaper 3lettres après un caractère spécial, il n'affiche plus error
+
+            /*
+
+            if (/^[^0-9_!¡?÷?¿/\\+=@#$%&*(){}|~<>;:[\]]{3,20}/.test(firstName)) {
+                return true;
+            }
+            else {
+                errorFirstName.innerText = "Prénom non valide";
+            }
+
+            */
+
+        })
+    }
+
+    // si toutes les fonctions check true -> 
+    // récuperer données dans un objet et envoyer sur un listener clic DOMorder
 
 })
